@@ -1,0 +1,11 @@
+email_from_address: path-help@sanger.ac.uk
+email_domain: sanger.ac.uk
+tracking_databases: [
+      'pathogen_prok_454_track',
+      'pathogen_qc_beta',
+      'pathogen_euk_track',
+      'pathogen_helminth_track',
+      'pathogen_metahit_track',
+      'pathogen_prok_track',
+      'pathogen_virus_track'
+      ]

@@ -8,7 +8,12 @@ send emails to the list of assosiated users (if they havent been sent before).
 =head1 SYNOPSIS
 
 use PipelinesReporting::Study;
-my $user_study = PipelinesReporting::Study->new();
+my $study = PipelinesReporting::Study->new(  
+  _pipeline_dbh => $pipeline_dbh,
+  _qc_dbh => $qc_dbh,
+  sequencescape_study_id => 123
+  );
+$study->send_emails();
 
 =cut
 
@@ -16,10 +21,11 @@ package PipelinesReporting::Study;
 use Moose;
 use PipelinesReporting::Schema;
 use PipelinesReporting::UserStudies;
+use PipelinesReporting::LaneEmail;
 
-has '_pipeline_dbh'   => ( is => 'rw',                           required   => 1 );
-has '_qc_dbh'         => ( is => 'rw',                           required   => 1 );
-has 'study_id'        => ( is => 'rw', isa => 'Int',             required   => 1 );
+has '_pipeline_dbh'          => ( is => 'rw',                           required   => 1 );
+has '_qc_dbh'                => ( is => 'rw',                           required   => 1 );
+has 'sequencescape_study_id' => ( is => 'rw', isa => 'Int',             required   => 1 );
 
 has 'user_emails'     => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
 has 'qc_lane_ids'     => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
@@ -46,7 +52,7 @@ sub _build_user_emails
 {
   my $self = shift;
   my $user_study = PipelinesReporting::UserStudies->new( _dbh => $self->_qc_dbh);
-  return $user_study->study_user_emails($self->study_id);
+  return $user_study->study_user_emails($self->sequencescape_study_id);
 }
 
 sub _build_qc_lane_ids
@@ -86,7 +92,7 @@ sub _samples_result_set
 {
   my ($self) = @_;
   # a study is called a project in VRTrack?
-  $self->_pipeline_dbh->resultset('Project')->search({ ssid => $self->study_id  })->search_related('samples');
+  $self->_pipeline_dbh->resultset('Project')->search({ ssid => $self->sequencescape_study_id  })->search_related('samples');
 }
 
 sub _libraries_result_set
@@ -115,6 +121,7 @@ sub _lane_ids_filtered_by_processed_flag
   my @lane_ids;
   
   my $lanes_result_set = $self->_lanes_filtered_by_processed_flag_result_set($processed);
+
   while( my $lane = $lanes_result_set->next)
   {
     push(@lane_ids, $lane->lane_id);

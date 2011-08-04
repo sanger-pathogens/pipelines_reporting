@@ -11,7 +11,9 @@ use PipelinesReporting::Study;
 my $study = PipelinesReporting::Study->new(  
   _pipeline_dbh => $pipeline_dbh,
   _qc_dbh => $qc_dbh,
-  sequencescape_study_id => 123
+  sequencescape_study_id => 123,
+  email_from_address => 'example@example.com',
+  email_domain => 'example.com'
   );
 $study->send_emails();
 
@@ -23,9 +25,11 @@ use PipelinesReporting::Schema;
 use PipelinesReporting::UserStudies;
 use PipelinesReporting::LaneEmail;
 
-has '_pipeline_dbh'          => ( is => 'rw',                           required   => 1 );
-has '_qc_dbh'                => ( is => 'rw',                           required   => 1 );
-has 'sequencescape_study_id' => ( is => 'rw', isa => 'Int',             required   => 1 );
+has '_pipeline_dbh'          => ( is => 'rw',               required   => 1 );
+has '_qc_dbh'                => ( is => 'rw',               required   => 1 );
+has 'sequencescape_study_id' => ( is => 'rw', isa => 'Int', required   => 1 );
+has 'email_from_address'     => ( is => 'rw', isa => 'Str', required   => 1 );
+has 'email_domain'           => ( is => 'rw', isa => 'Str', required   => 1 );
 
 has 'user_emails'     => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
 has 'qc_lane_ids'     => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
@@ -37,7 +41,7 @@ my $MAPPED_PROCESSED_FLAG = 7;
 ### public methods ###
 sub send_emails
 {
-  my $self = shift;
+  my ($self) = @_;
   return unless(defined $self->user_emails);
   
   $self->_send_qc_emails if(@{$self->qc_lane_ids} > 0);
@@ -50,14 +54,14 @@ sub send_emails
 ### builders ###
 sub _build_user_emails
 {
-  my $self = shift;
-  my $user_study = PipelinesReporting::UserStudies->new( _dbh => $self->_qc_dbh);
+  my ($self) = @_;
+  my $user_study = PipelinesReporting::UserStudies->new( _dbh => $self->_qc_dbh, email_domain => $self->email_domain );
   return $user_study->study_user_emails($self->sequencescape_study_id);
 }
 
 sub _build_qc_lane_ids
 {
-  my $self = shift;
+  my ($self) = @_;
   return undef unless(defined $self->user_emails);
   my @lane_ids_needing_emails ;
 
@@ -72,7 +76,7 @@ sub _build_qc_lane_ids
 
 sub _build_mapped_lane_ids
 {
-  my $self = shift;
+  my ($self) = @_;
   return undef unless(defined $self->user_emails);
   my @lane_ids_needing_emails ;
 

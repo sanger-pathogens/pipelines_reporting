@@ -1,0 +1,44 @@
+qc:
+  database: pathogen_qc_grind
+  host:     mcs6
+  port:     3346
+  user:     pathpipe_rw
+  disable_emails: true
+
+local_test:
+  database: vrtrack_test
+  host:     localhost
+  port:     3306
+  user:     root
+  
+eukaryotes:
+  database: pathogen_euk_track_test
+  host:     mcs6
+  port:     3346
+  user:     pathpipe_rw
+  #password: 
+
+prokaryotes:
+  database: pathogen_prok_track_test
+  host:     mcs6
+  port:     3346
+  user:     pathpipe_rw
+
+helminths:
+  database: pathogen_helminth_track_test
+  host:     mcs6
+  port:     3346
+  user:     pathpipe_rw
+
+viruses:
+  database: pathogen_virus_track_test
+  host:     mcs6
+  port:     3346
+  user:     pathpipe_rw
+
+metahit:
+  database: pathogen_metahit_track_test
+  host:     mcs6
+  port:     3346
+  user:     pathpipe_rw
+

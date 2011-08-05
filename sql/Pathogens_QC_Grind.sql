@@ -1,9 +1,9 @@
 CREATE TABLE `user_studies` (
   `row_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `sequencescape_study_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `sequencescape_study_id` smallint(5) unsigned NOT NULL,
   `username` varchar(40) NOT NULL DEFAULT '',
   PRIMARY KEY (`row_id`),
-  KEY `study_id` (`study_id`),
+  KEY `sequencescape_study_id` (`sequencescape_study_id`),
   KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

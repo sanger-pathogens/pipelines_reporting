@@ -9,7 +9,9 @@ my $study = PipelinesReporting::SendStudyEmails->new(
   _pipeline_dbh => $pipeline_dbh,
   _qc_dbh => $qc_dbh,
   email_from_address => 'example@example.com',
-  email_domain => 'example.com'
+  email_domain => 'example.com',
+  qc_grind_url => 'http://example.com',
+  database_name => 'my_test_database'
 );
 
 =cut
@@ -23,6 +25,8 @@ has '_pipeline_dbh'          => ( is => 'rw',  required   => 1 );
 has '_qc_dbh'                => ( is => 'rw',  required   => 1 );
 has 'email_from_address'     => ( is => 'rw', isa => 'Str', required   => 1 );
 has 'email_domain'           => ( is => 'rw', isa => 'Str', required   => 1 );
+has 'qc_grind_url'           => ( is => 'rw', isa => 'Str', required   => 1 );
+has 'database_name'          => ( is => 'rw', isa => 'Str', required   => 1 );
 
 sub BUILD
 {
@@ -35,7 +39,9 @@ sub BUILD
       _qc_dbh => $self->_qc_dbh,
       sequencescape_study_id => $pipeline_study->ssid,
       email_from_address => $self->email_from_address,
-      email_domain => $self->email_domain
+      email_domain => $self->email_domain,
+      qc_grind_url => $self->qc_grind_url,
+      database_name => $self->database_name
     );
     $study->send_emails();
   }

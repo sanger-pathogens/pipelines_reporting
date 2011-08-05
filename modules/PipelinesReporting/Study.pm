@@ -13,7 +13,9 @@ my $study = PipelinesReporting::Study->new(
   _qc_dbh => $qc_dbh,
   sequencescape_study_id => 123,
   email_from_address => 'example@example.com',
-  email_domain => 'example.com'
+  email_domain => 'example.com',
+  qc_grind_url => 'http://example.com',
+  database_name => 'my_test_database'
   );
 $study->send_emails();
 
@@ -30,6 +32,8 @@ has '_qc_dbh'                => ( is => 'rw',               required   => 1 );
 has 'sequencescape_study_id' => ( is => 'rw', isa => 'Int', required   => 1 );
 has 'email_from_address'     => ( is => 'rw', isa => 'Str', required   => 1 );
 has 'email_domain'           => ( is => 'rw', isa => 'Str', required   => 1 );
+has 'qc_grind_url'           => ( is => 'rw', isa => 'Str', required   => 1 );
+has 'database_name'          => ( is => 'rw', isa => 'Str', required   => 1 );
 
 has 'user_emails'     => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
 has 'qc_lane_ids'     => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
@@ -44,8 +48,8 @@ sub send_emails
   my ($self) = @_;
   return unless(defined $self->user_emails);
   
-  $self->_send_qc_emails if(@{$self->qc_lane_ids} > 0);
-  $self->_send_mapped_emails if(@{$self->mapped_lane_ids} > 0);
+  $self->_send_emails() if((@{$self->qc_lane_ids} > 0) || (@{$self->mapped_lane_ids} > 0));
+
 }
 
 ### END public methods ###
@@ -92,11 +96,16 @@ sub _build_mapped_lane_ids
 ### END builders ###
 
 ### Result sets ###
+sub _project
+{
+  my ($self) = @_;
+  $self->_pipeline_dbh->resultset('Project')->search({ 'me.ssid' => $self->sequencescape_study_id  })->first;
+}
 sub _samples_result_set
 {
   my ($self) = @_;
-  # a study is called a project in VRTrack?
-  $self->_pipeline_dbh->resultset('Project')->search({ ssid => $self->sequencescape_study_id  })->search_related('samples');
+  # in VRTrack a project contains the sequencescape study id
+  $self->_pipeline_dbh->resultset('Project')->search({ 'me.ssid' => $self->sequencescape_study_id  })->search_related('samples');
 }
 
 sub _libraries_result_set
@@ -108,7 +117,7 @@ sub _libraries_result_set
 sub _lanes_result_set
 {
   my ($self, $processed) = @_;
-  $self->_libraries_result_set()->search_related('lanes', { processed => $processed });
+  $self->_libraries_result_set()->search_related('lanes', { 'lanes.processed' => $processed });
 }
 
 sub _lanes_filtered_by_processed_flag_result_set
@@ -134,16 +143,75 @@ sub _lane_ids_filtered_by_processed_flag
   return \@lane_ids;
 }
 
-sub _send_qc_emails
+sub _send_emails
 {
   my ($self) = @_;
-  #TODO
+  my $study_name = $self->_project->name;
+
+  my $qc_body = $self->_construct_email_body_for_lane_action('QC', $self->qc_lane_ids);
+  my $mapped_body =  $self->_construct_email_body_for_lane_action('Mapping', $self->mapped_lane_ids);
+  
+  # my $to_email_addresses = join(',',@{$self->user_emails});
+  my $to_email_addresses = 'ap13@'.$self->email_domain;
+  
+  sendmail(-from => $self->email_from_address,
+	           -to => $to_email_addresses,
+	      -subject => "Lanes processed for $study_name",
+	         -body => $qc_body."\n".$mapped_body);
 }
 
-sub _send_mapped_emails
+sub _construct_email_body_for_lane_action
 {
-  my ($self) = @_;
-  #TODO
+  my ($self, $action_name,  $lane_ids) = @_;
+  my $study_name = $self->_project->name;
+
+  my $body = '';
+  if(@{$lane_ids}> 0)
+  {
+    my $lane_urls_str = join("\n",@{$self->_construct_lane_urls($lane_ids)});
+    $body = <<BODY;
+The following lanes have finished $action_name in Study $study_name.
+
+$lane_urls_str
+
+BODY
+  }
+    
+  return $body;
+}
+
+sub _construct_lane_urls
+{
+  my ($self, $lane_ids) = @_;
+  my @lane_urls;
+  for my $lane_id (@{$lane_ids})
+  {
+    push(@lane_urls, $self->qc_grind_url.'?mode=0&lane_id='.$lane_id.'&db='.$self->database_name );
+  }
+  
+  return \@lane_urls;
+}
+
+# ToDo put into module
+sub sendmail {
+  my %args = @_;
+  my ($from, $to, $subject, $body) = @args{qw(-from -to -subject -body)};
+
+  unless(open (MAIL, "|/usr/sbin/sendmail -t")) {
+    warn "Error starting sendmail: $!";
+  }
+  else{
+    print MAIL "From: $from\n";
+    print MAIL "To: $to\n";
+    print MAIL "Subject: $subject\n\n";
+    print MAIL $body;
+
+    if (close(MAIL)) {
+    }
+    else {
+      warn "Failed to send mail: $!";
+    }
+  }
 }
 
 1;

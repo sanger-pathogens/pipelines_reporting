@@ -12,10 +12,10 @@ BEGIN {
 
 # setup test databases with seed data
 my $dbh = DBICx::TestDatabase->new('PipelinesReporting::Schema');
-$dbh->resultset('UserStudies')->create({ row_id => 1, study_id => 2, username => 'aaa'});
-$dbh->resultset('UserStudies')->create({ row_id => 2, study_id => 2, username => 'bbb'});
-$dbh->resultset('UserStudies')->create({ row_id => 3, study_id => 3, username => 'ccc'});
-$dbh->resultset('UserStudies')->create({ row_id => 4, study_id => 3, username => 'aaa'});
+$dbh->resultset('UserStudies')->create({ row_id => 1, sequencescape_study_id => 2, username => 'aaa'});
+$dbh->resultset('UserStudies')->create({ row_id => 2, sequencescape_study_id => 2, username => 'bbb'});
+$dbh->resultset('UserStudies')->create({ row_id => 3, sequencescape_study_id => 3, username => 'ccc'});
+$dbh->resultset('UserStudies')->create({ row_id => 4, sequencescape_study_id => 3, username => 'aaa'});
 
 ok my $user_study = PipelinesReporting::UserStudies->new( _dbh => $dbh),'initialise';
 

@@ -75,7 +75,7 @@ sub _study_user_rs
 {
   my ($self, $study_id, $username) = @_;
   my $user_studies_rs = $self->_dbh->resultset('UserStudies')->search(
-    { study_id =>  $study_id, username => $username }
+    { sequencescape_study_id =>  $study_id, username => $username }
   );
   
   return $user_studies_rs;
@@ -88,7 +88,7 @@ sub _study_users_rs
   my $study_id = shift;
 
   my $users_rs = $self->_dbh->resultset('UserStudies')->search(
-    { study_id =>  $study_id },
+    { sequencescape_study_id =>  $study_id },
     {
       columns => [ qw/username/ ],
       distinct => 1

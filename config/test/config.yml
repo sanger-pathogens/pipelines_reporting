@@ -1,9 +1,3 @@
 email_from_address: path-help@sanger.ac.uk
 email_domain: sanger.ac.uk
-tracking_databases: [
-      'pathogen_euk_track_test',
-      'pathogen_helminth_track_test',
-      'pathogen_metahit_track_test',
-      'pathogen_prok_track_test',
-      'pathogen_virus_track_test'
-      ]
+qc_grind_url: http://intwebdev.sanger.ac.uk/cgi-bin/teams/pathogen/qc_grind/qc_grind.pl

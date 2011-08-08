@@ -10,29 +10,33 @@ eukaryotes:
   database: pathogen_euk_track
   host:     mcs6
   port:     3347
-  user:     pathpipe_rw
-  #password: 
+  user:     pathpipe_ro
+  password: 
 
 prokaryotes:
   database: pathogen_prok_track
   host:     mcs6
   port:     3347
-  user:     pathpipe_rw
+  user:     pathpipe_ro
+  password: 
 
 helminths:
   database: pathogen_helminth_track
   host:     mcs6
   port:     3347
-  user:     pathpipe_rw
+  user:     pathpipe_ro
+  password: 
 
 viruses:
   database: pathogen_virus_track
   host:     mcs6
   port:     3347
-  user:     pathpipe_rw
+  user:     pathpipe_ro
+  password: 
 
 metahit:
   database: pathogen_metahit_track
   host:     mcs6
   port:     3347
-  user:     pathpipe_rw
+  user:     pathpipe_ro
+  password: 

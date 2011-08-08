@@ -12,8 +12,8 @@ BEGIN {
 
 # setup test databases with seed data
 my $dbh = DBICx::TestDatabase->new('PipelinesReporting::Schema');
-$dbh->resultset('UserStudies')->create({ row_id => 1, sequencescape_study_id => 2, username => 'aaa'});
-$dbh->resultset('UserStudies')->create({ row_id => 2, sequencescape_study_id => 2, username => 'bbb'});
+$dbh->resultset('UserStudies')->create({  sequencescape_study_id => 2, username => 'aaa'});
+$dbh->resultset('UserStudies')->create({  sequencescape_study_id => 2, username => 'bbb'});
 
 $dbh->resultset('Project'    )->create({ row_id => 1, project_id => 1, ssid => 2 , name => 'Study Name'});
 $dbh->resultset('Project'    )->create({ row_id => 2, project_id => 2, ssid => 10, name => 'Study Name'});
@@ -98,7 +98,7 @@ is_deeply $study->qc_lane_ids, undef, 'qc lane ids undef if no users';
 is_deeply $study->mapped_lane_ids, undef, 'mapped lane ids undef if no users';
 
 # add a user for the study and lane ids should be empty
-$dbh->resultset('UserStudies')->create({ row_id => 3, sequencescape_study_id => 10, username => 'aaa'});
+$dbh->resultset('UserStudies')->create({ sequencescape_study_id => 10, username => 'aaa'});
 ok $study = PipelinesReporting::Study->new(  
   _pipeline_dbh => $dbh,
   _qc_dbh => $dbh,

@@ -46,7 +46,7 @@ my $MAPPED_PROCESSED_FLAG = 7;
 sub send_emails
 {
   my ($self) = @_;
-  return unless(defined $self->user_emails);
+  return if( !(defined $self->user_emails) || ( @{$self->user_emails} == 0 ) );
   
   $self->_send_emails() if((@{$self->qc_lane_ids} > 0) || (@{$self->mapped_lane_ids} > 0));
 
@@ -66,7 +66,7 @@ sub _build_user_emails
 sub _build_qc_lane_ids
 {
   my ($self) = @_;
-  return undef unless(defined $self->user_emails);
+  return if( !(defined $self->user_emails) || ( @{$self->user_emails} == 0 ) );
   my @lane_ids_needing_emails ;
 
   for my $lane_id (@{$self->_lane_ids_filtered_by_processed_flag($QC_PROCESSED_FLAG)})
@@ -81,7 +81,7 @@ sub _build_qc_lane_ids
 sub _build_mapped_lane_ids
 {
   my ($self) = @_;
-  return undef unless(defined $self->user_emails);
+  return if( !(defined $self->user_emails) || ( @{$self->user_emails} == 0 ) );
   my @lane_ids_needing_emails ;
 
   for my $lane_id (@{$self->_lane_ids_filtered_by_processed_flag($MAPPED_PROCESSED_FLAG)})
@@ -151,8 +151,7 @@ sub _send_emails
   my $qc_body = $self->_construct_email_body_for_lane_action('QC', $self->qc_lane_ids);
   my $mapped_body =  $self->_construct_email_body_for_lane_action('Mapping', $self->mapped_lane_ids);
   
-  # my $to_email_addresses = join(',',@{$self->user_emails});
-  my $to_email_addresses = 'ap13@'.$self->email_domain;
+  my $to_email_addresses = join(',',@{$self->user_emails});
   
   sendmail(-from => $self->email_from_address,
 	           -to => $to_email_addresses,

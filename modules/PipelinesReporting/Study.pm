@@ -152,11 +152,12 @@ sub _send_emails
   my $mapped_body =  $self->_construct_email_body_for_lane_action('Mapping', $self->mapped_lane_ids);
   
   my $to_email_addresses = join(',',@{$self->user_emails});
+  my $body = $qc_body."\n".$mapped_body."\n".'You are receiving this email because we think you are an analyst for this study. If you have received this email in error please contact path-help@sanger.ac.uk and we will remove you.';
   
   sendmail(-from => $self->email_from_address,
 	           -to => $to_email_addresses,
 	      -subject => "Lanes processed for $study_name",
-	         -body => $qc_body."\n".$mapped_body);
+	         -body => $body);
 }
 
 sub _construct_email_body_for_lane_action

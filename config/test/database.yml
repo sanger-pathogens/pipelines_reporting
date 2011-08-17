@@ -16,41 +16,46 @@ tradis:
   database: pathogen_tradis_track_test
   host:     mcs6
   port:     3346
-  user:     pathpipe_rw
+  user:     pathpipe_ro
+  password: 
 
 eukaryotes:
   database: pathogen_euk_track_test
   host:     mcs6
   port:     3346
-  user:     pathpipe_rw
-  #password: 
+  user:     pathpipe_ro
+  password: 
   disable_emails: true
 
 prokaryotes:
   database: pathogen_prok_track_test
   host:     mcs6
   port:     3346
-  user:     pathpipe_rw
+  user:     pathpipe_ro
+  password: 
   disable_emails: true
 
 helminths:
   database: pathogen_helminth_track_test
   host:     mcs6
   port:     3346
-  user:     pathpipe_rw
+  user:     pathpipe_ro
+  password: 
   disable_emails: true
 
 viruses:
   database: pathogen_virus_track_test
   host:     mcs6
   port:     3346
-  user:     pathpipe_rw
+  user:     pathpipe_ro
+  password: 
   disable_emails: true
 
 metahit:
   database: pathogen_metahit_track_test
   host:     mcs6
   port:     3346
-  user:     pathpipe_rw
+  user:     pathpipe_ro
+  password: 
   disable_emails: true
 

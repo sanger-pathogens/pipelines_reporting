@@ -157,7 +157,7 @@ sub _send_emails
   sendmail(-from => $self->email_from_address,
 	           -to => $to_email_addresses,
 	      -subject => "Lanes processed for $study_name",
-	         -body => $qc_body."\n".$mapped_body);
+	         -body => $body);
 }
 
 sub _construct_email_body_for_lane_action

@@ -48,7 +48,7 @@ sub send_emails
   my ($self) = @_;
   return if( !(defined $self->user_emails) || ( @{$self->user_emails} == 0 ) );
   
-  $self->_send_emails() if((%{$self->qc_names} > 0) || (%{$self->mapped_names} > 0));
+  $self->_send_emails() if((scalar( keys %{$self->qc_names}) > 0) || (scalar( keys %{$self->mapped_names}) > 0));
 
 }
 

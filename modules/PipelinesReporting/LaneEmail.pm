@@ -7,7 +7,7 @@ LaneEmails.pm   - Records if an email has been sent for different actions on a l
 use PipelinesReporting::LaneEmails;
 my $lane_email = PipelinesReporting::LaneEmails->new(
   _dbh => $dbh,
-  lane_id => 1234
+  name => 1234
   );
 $lane_email->is_qc_email_sent();
 $lane_email->is_mapping_email_sent();
@@ -19,7 +19,7 @@ use Moose;
 use PipelinesReporting::Schema;
 
 has '_dbh'        => ( is => 'rw', required   => 1 );
-has 'lane_id'     => ( is => 'rw', isa => 'Int', required   => 1 );
+has 'name'        => ( is => 'rw', isa => 'Str', required   => 1 );
 has 'lane_email'  => ( is => 'rw', lazy_build   => 1 );
 
 
@@ -29,7 +29,7 @@ sub _build_lane_email
   my $lane_email_rs = $self->_lane_email_rs();
   unless(defined $lane_email_rs)
   {
-    $lane_email_rs   = $self->_dbh->resultset('LaneEmails')->create({ lane_id => $self->lane_id, qc_email_sent => 0, mapping_email_sent => 0 });
+    $lane_email_rs   = $self->_dbh->resultset('LaneEmails')->create({ name => $self->name, qc_email_sent => 0, mapping_email_sent => 0 });
   }
   return $lane_email_rs;
 }
@@ -38,7 +38,7 @@ sub _lane_email_rs
 {
   my ($self) = @_;
   my $lane_email_rs = $self->_dbh->resultset('LaneEmails')->search(
-    { lane_id =>  $self->lane_id }
+    { name =>  $self->name }
   )->first;
   
   return $lane_email_rs;

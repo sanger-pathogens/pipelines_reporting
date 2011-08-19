@@ -29,9 +29,3 @@ viruses:
   host:     mcs6
   port:     3347
   user:     pathpipe_ro
-
-metahit:
-  database: pathogen_metahit_track
-  host:     mcs6
-  port:     3347
-  user:     pathpipe_ro

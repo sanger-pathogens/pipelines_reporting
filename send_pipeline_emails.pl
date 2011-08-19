@@ -61,7 +61,6 @@ my $qc_dbh = PipelinesReporting::Schema->connect(
 PipelinesReporting::SendPipelineEmails->new(
   _qc_dbh => $qc_dbh,
   pipeline_databases => \%database_settings,
-  database_password => $database_password ,
   email_from_address => $config_settings{email_from_address},
   email_domain => $config_settings{email_domain},
   qc_grind_url => $config_settings{qc_grind_url}

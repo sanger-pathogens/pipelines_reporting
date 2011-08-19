@@ -7,8 +7,8 @@ CREATE TABLE `user_studies` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `lane_emails` (
-  `lane_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255)  NOT NULL,
   `qc_email_sent` tinyint(1) DEFAULT 0,
   `mapping_email_sent` tinyint(1) DEFAULT 0,
-  PRIMARY KEY (`lane_id`)
+  PRIMARY KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

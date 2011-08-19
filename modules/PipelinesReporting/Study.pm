@@ -35,9 +35,9 @@ has 'email_domain'           => ( is => 'rw', isa => 'Str', required   => 1 );
 has 'qc_grind_url'           => ( is => 'rw', isa => 'Str', required   => 1 );
 has 'database_name'          => ( is => 'rw', isa => 'Str', required   => 1 );
 
-has 'user_emails'     => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
-has 'qc_lane_ids'     => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
-has 'mapped_lane_ids' => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
+has 'user_emails'  => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
+has 'qc_names'     => ( is => 'rw', isa => 'Maybe[HashRef]', lazy_build => 1 );
+has 'mapped_names' => ( is => 'rw', isa => 'Maybe[HashRef]', lazy_build => 1 );
 
 my $QC_PROCESSED_FLAG     = 3;
 my $MAPPED_PROCESSED_FLAG = 7;
@@ -48,7 +48,7 @@ sub send_emails
   my ($self) = @_;
   return if( !(defined $self->user_emails) || ( @{$self->user_emails} == 0 ) );
   
-  $self->_send_emails() if((@{$self->qc_lane_ids} > 0) || (@{$self->mapped_lane_ids} > 0));
+  $self->_send_emails() if((@{$self->qc_names} > 0) || (@{$self->mapped_names} > 0));
 
 }
 
@@ -63,34 +63,36 @@ sub _build_user_emails
   return $user_study->study_user_emails($self->sequencescape_study_id);
 }
 
-sub _build_qc_lane_ids
+sub _build_qc_names
 {
   my ($self) = @_;
   return if( !(defined $self->user_emails) || ( @{$self->user_emails} == 0 ) );
-  my @lane_ids_needing_emails ;
-
-  for my $lane_id (@{$self->_lane_ids_filtered_by_processed_flag($QC_PROCESSED_FLAG)})
+  my %names_needing_emails ;
+  
+  my %names_filtered_by_processed_flag = %{$self->_names_filtered_by_processed_flag($QC_PROCESSED_FLAG)};
+  for my $name(keys %names_filtered_by_processed_flag )
   {
-    my $lane_email = PipelinesReporting::LaneEmails->new(_dbh => $self->_qc_dbh,lane_id => $lane_id);
-    push(@lane_ids_needing_emails, $lane_id) unless( $lane_email->is_qc_email_sent() );
+    my $lane_email = PipelinesReporting::LaneEmails->new(_dbh => $self->_qc_dbh,name => $name);
+    $names_needing_emails{$name} = $names_filtered_by_processed_flag{$name} unless( $lane_email->is_qc_email_sent() );
   }
   
-  return \@lane_ids_needing_emails;
+  return \%names_needing_emails;
 }
 
-sub _build_mapped_lane_ids
+sub _build_mapped_names
 {
   my ($self) = @_;
   return if( !(defined $self->user_emails) || ( @{$self->user_emails} == 0 ) );
-  my @lane_ids_needing_emails ;
+  my %names_needing_emails ;
 
-  for my $lane_id (@{$self->_lane_ids_filtered_by_processed_flag($MAPPED_PROCESSED_FLAG)})
+  my %names_filtered_by_processed_flag = %{$self->_names_filtered_by_processed_flag($MAPPED_PROCESSED_FLAG)};
+  for my $name(keys %names_filtered_by_processed_flag )
   {
-    my $lane_email = PipelinesReporting::LaneEmails->new(_dbh => $self->_qc_dbh,lane_id => $lane_id);
-    push(@lane_ids_needing_emails, $lane_id) unless( $lane_email->is_mapping_email_sent() );
+    my $lane_email = PipelinesReporting::LaneEmails->new(_dbh => $self->_qc_dbh,name => $name);
+    $names_needing_emails{$name} = $names_filtered_by_processed_flag{$name} unless( $lane_email->is_mapping_email_sent() );
   }
 
-  return \@lane_ids_needing_emails;
+  return \%names_needing_emails;
 }
 
 ### END builders ###
@@ -128,19 +130,19 @@ sub _lanes_filtered_by_processed_flag_result_set
 
 ### END Result sets ###
 
-sub _lane_ids_filtered_by_processed_flag
+sub _names_filtered_by_processed_flag
 {
   my ($self, $processed) = @_;
-  my @lane_ids;
+  my %names;
   
   my $lanes_result_set = $self->_lanes_filtered_by_processed_flag_result_set($processed);
 
   while( my $lane = $lanes_result_set->next)
   {
-    push(@lane_ids, $lane->lane_id);
+    $names{$lane->name} = $lane->lane_id;
   }
   
-  return \@lane_ids;
+  return \%names;
 }
 
 sub _send_emails
@@ -148,8 +150,8 @@ sub _send_emails
   my ($self) = @_;
   my $study_name = $self->_project->name;
 
-  my $qc_body = $self->_construct_email_body_for_lane_action('QC', $self->qc_lane_ids);
-  my $mapped_body =  $self->_construct_email_body_for_lane_action('Mapping', $self->mapped_lane_ids);
+  my $qc_body = $self->_construct_email_body_for_lane_action('QC', $self->qc_names);
+  my $mapped_body =  $self->_construct_email_body_for_lane_action('Mapping', $self->mapped_names);
   
   my $to_email_addresses = join(',',@{$self->user_emails});
   my $body = $qc_body."\n".$mapped_body."\n".'You are receiving this email because we think you are an analyst for this study. If you have received this email in error please contact path-help@sanger.ac.uk and we will remove you.';
@@ -162,13 +164,13 @@ sub _send_emails
 
 sub _construct_email_body_for_lane_action
 {
-  my ($self, $action_name,  $lane_ids) = @_;
+  my ($self, $action_name,  $names) = @_;
   my $study_name = $self->_project->name;
 
   my $body = '';
-  if(@{$lane_ids}> 0)
+  if(scalar(keys %$names) > 0)
   {
-    my $lane_urls_str = join("\n",@{$self->_construct_lane_urls($lane_ids)});
+    my $lane_urls_str = join("\n",@{$self->_construct_lane_urls($names)});
     $body = <<BODY;
 The following lanes have finished $action_name in Study $study_name.
 
@@ -182,11 +184,11 @@ BODY
 
 sub _construct_lane_urls
 {
-  my ($self, $lane_ids) = @_;
+  my ($self, $names) = @_;
   my @lane_urls;
-  for my $lane_id (@{$lane_ids})
+  while (my ($name, $lane_id) = each %{$names})
   {
-    push(@lane_urls, $self->qc_grind_url.'?mode=0&lane_id='.$lane_id.'&db='.$self->database_name );
+    push(@lane_urls, $name."\t".$self->qc_grind_url.'?mode=0&lane_id='.$lane_id.'&db='.$self->database_name );
   }
   
   return \@lane_urls;

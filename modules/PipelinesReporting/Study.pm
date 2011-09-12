@@ -39,8 +39,8 @@ has 'user_emails'  => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
 has 'qc_names'     => ( is => 'rw', isa => 'Maybe[HashRef]', lazy_build => 1 );
 has 'mapped_names' => ( is => 'rw', isa => 'Maybe[HashRef]', lazy_build => 1 );
 
-my $QC_PROCESSED_FLAG     = 3;
-my $MAPPED_PROCESSED_FLAG = 7;
+my $QC_PROCESSED_FLAG     = 11;
+my $MAPPED_PROCESSED_FLAG = 15;
 
 ### public methods ###
 sub send_emails

@@ -4,7 +4,7 @@ use warnings;
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
-    use Test::Most tests => 19;
+    use Test::Most tests => 28;
     use DBICx::TestDatabase;
     use PipelinesReporting::Schema;
     use_ok('PipelinesReporting::Study');
@@ -23,9 +23,9 @@ $dbh->resultset('Sample'     )->create({ row_id => 1, sample_id  => 3, project_i
 $dbh->resultset('Library'    )->create({ row_id => 1, library_id => 4, sample_id  => 3 });
 $dbh->resultset('Library'    )->create({ row_id => 2, library_id => 7, sample_id  => 3 });
 
-$dbh->resultset('Lane'       )->create({ row_id => 1, name => "abc_1", lane_id => 5, library_id => 4, processed => 7 });
-$dbh->resultset('Lane'       )->create({ row_id => 2, name => "abc_2", lane_id => 6, library_id => 4, processed => 3 });
-$dbh->resultset('Lane'       )->create({ row_id => 3, name => "abc_3", lane_id => 8, library_id => 7, processed => 3 });
+$dbh->resultset('Lane'       )->create({ row_id => 1, name => "abc_1", lane_id => 5, library_id => 4, processed => 15 });
+$dbh->resultset('Lane'       )->create({ row_id => 2, name => "abc_2", lane_id => 6, library_id => 4, processed => 11 });
+$dbh->resultset('Lane'       )->create({ row_id => 3, name => "abc_3", lane_id => 8, library_id => 7, processed => 11 });
 
 
 # valid study
@@ -49,6 +49,18 @@ is_deeply $study->qc_names, \%qc_names, 'qc lane ids';
 
 my %mapped_names = (abc_1 => 5);
 is_deeply $study->mapped_names, \%mapped_names, 'mapped lane ids';
+
+ok my $lane_email_abc_1 = PipelinesReporting::LaneEmails->new(_dbh => $dbh,name => "abc_1"), 'initialize lane_email 1 ';
+ok my $lane_email_abc_2 = PipelinesReporting::LaneEmails->new(_dbh => $dbh,name => "abc_2"), 'initialize lane_email 2';
+ok my $lane_email_abc_3 = PipelinesReporting::LaneEmails->new(_dbh => $dbh,name => "abc_3"), 'initialize lane_email 3';
+
+is $lane_email_abc_1->is_qc_email_sent(), 0, 'qc email lane 1 sent false';
+is $lane_email_abc_2->is_qc_email_sent(), 1, 'qc email lane 2 sent true';
+is $lane_email_abc_3->is_qc_email_sent(), 1, 'qc email lane 3 sent true';
+
+is $lane_email_abc_1->is_mapping_email_sent(), 1, 'mapped email lane 1 sent true';
+is $lane_email_abc_2->is_mapping_email_sent(), 0, 'mapped email lane 2 sent false';
+is $lane_email_abc_3->is_mapping_email_sent(), 0, 'mapped email lane 3 sent false';
 
 # check body of constructed email
 my $expected_email_body = 'The following lanes have finished QC in Study Study Name.

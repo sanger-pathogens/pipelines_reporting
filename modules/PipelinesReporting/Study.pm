@@ -74,6 +74,7 @@ sub _build_qc_names
   {
     my $lane_email = PipelinesReporting::LaneEmails->new(_dbh => $self->_qc_dbh,name => $name);
     $names_needing_emails{$name} = $names_filtered_by_processed_flag{$name} unless( $lane_email->is_qc_email_sent() );
+    $lane_email->qc_email_sent();
   }
   
   return \%names_needing_emails;
@@ -90,6 +91,7 @@ sub _build_mapped_names
   {
     my $lane_email = PipelinesReporting::LaneEmails->new(_dbh => $self->_qc_dbh,name => $name);
     $names_needing_emails{$name} = $names_filtered_by_processed_flag{$name} unless( $lane_email->is_mapping_email_sent() );
+    $lane_email->mapping_email_sent();
   }
 
   return \%names_needing_emails;
@@ -152,6 +154,8 @@ sub _send_emails
 
   my $qc_body = $self->_construct_email_body_for_lane_action('QC', $self->qc_names);
   my $mapped_body =  $self->_construct_email_body_for_lane_action('Mapping', $self->mapped_names);
+  
+  
   
   my $to_email_addresses = join(',',@{$self->user_emails});
   my $body = $qc_body."\n".$mapped_body."\n".'You are receiving this email because we think you are an analyst for this study. If you have received this email in error please contact path-help@sanger.ac.uk and we will remove you.';

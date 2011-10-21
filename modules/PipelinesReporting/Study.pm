@@ -39,8 +39,8 @@ has 'user_emails'  => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
 has 'qc_names'     => ( is => 'rw', isa => 'Maybe[HashRef]', lazy_build => 1 );
 has 'mapped_names' => ( is => 'rw', isa => 'Maybe[HashRef]', lazy_build => 1 );
 
-my $QC_PROCESSED_FLAG     = 11;
-my $MAPPED_PROCESSED_FLAG = 15;
+my @QC_PROCESSED_FLAG     = (3,11);
+my @MAPPED_PROCESSED_FLAG = (7,15,263,271);
 
 ### public methods ###
 sub send_emails
@@ -69,7 +69,7 @@ sub _build_qc_names
   return if( !(defined $self->user_emails) || ( @{$self->user_emails} == 0 ) );
   my %names_needing_emails ;
   
-  my %names_filtered_by_processed_flag = %{$self->_names_filtered_by_processed_flag($QC_PROCESSED_FLAG)};
+  my %names_filtered_by_processed_flag = %{$self->_names_filtered_by_processed_flag(\@QC_PROCESSED_FLAG)};
   for my $name(keys %names_filtered_by_processed_flag )
   {
     my $lane_email = PipelinesReporting::LaneEmails->new(_dbh => $self->_qc_dbh,name => $name);
@@ -86,7 +86,7 @@ sub _build_mapped_names
   return if( !(defined $self->user_emails) || ( @{$self->user_emails} == 0 ) );
   my %names_needing_emails ;
 
-  my %names_filtered_by_processed_flag = %{$self->_names_filtered_by_processed_flag($MAPPED_PROCESSED_FLAG)};
+  my %names_filtered_by_processed_flag = %{$self->_names_filtered_by_processed_flag(\@MAPPED_PROCESSED_FLAG)};
   for my $name(keys %names_filtered_by_processed_flag )
   {
     my $lane_email = PipelinesReporting::LaneEmails->new(_dbh => $self->_qc_dbh,name => $name);
@@ -121,7 +121,7 @@ sub _libraries_result_set
 sub _lanes_result_set
 {
   my ($self, $processed) = @_;
-  $self->_libraries_result_set()->search_related('lanes', { 'lanes.processed' => $processed });
+  $self->_libraries_result_set()->search_related('lanes', { 'lanes.processed' => { 'in' => $processed } });
 }
 
 sub _lanes_filtered_by_processed_flag_result_set

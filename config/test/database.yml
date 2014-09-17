@@ -1,6 +1,6 @@
 qc:
   database: pathogen_qc_grind_test
-  host:     mcs6
+  host:     mcs11
   port:     3346
   user:     pathpipe_rw
   disable_emails: true
@@ -14,14 +14,14 @@ local_test:
   
 tradis:
   database: pathogen_tradis_track_test
-  host:     mcs6
+  host:     mcs11
   port:     3346
   user:     pathpipe_ro
   password: 
 
 eukaryotes:
   database: pathogen_euk_track_test
-  host:     mcs6
+  host:     mcs11
   port:     3346
   user:     pathpipe_ro
   password: 
@@ -29,7 +29,7 @@ eukaryotes:
 
 prokaryotes:
   database: pathogen_prok_track_test
-  host:     mcs6
+  host:     mcs11
   port:     3346
   user:     pathpipe_ro
   password: 
@@ -37,7 +37,7 @@ prokaryotes:
 
 helminths:
   database: pathogen_helminth_track_test
-  host:     mcs6
+  host:     mcs11
   port:     3346
   user:     pathpipe_ro
   password: 
@@ -45,7 +45,7 @@ helminths:
 
 viruses:
   database: pathogen_virus_track_test
-  host:     mcs6
+  host:     mcs11
   port:     3346
   user:     pathpipe_ro
   password: 
@@ -53,7 +53,7 @@ viruses:
 
 metahit:
   database: pathogen_metahit_track_test
-  host:     mcs6
+  host:     mcs11
   port:     3346
   user:     pathpipe_ro
   password: 

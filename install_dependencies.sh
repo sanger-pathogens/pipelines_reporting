@@ -14,7 +14,7 @@ cd $start_dir
 
 cpanm Dist::Zilla
 dzil authordeps --missing | cpanm
-cpanm DBICx::TestDatabase JSON File::Slurp YAML::XS LWP::UserAgent XML::TreePP URI::Escape
+cpanm DBICx::TestDatabase File::Slurp YAML::XS XML::TreePP
 
 set +eu
 set +x

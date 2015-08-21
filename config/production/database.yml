@@ -29,3 +29,9 @@ viruses:
   host:     mcs15
   port:     3347
   user:     pathpipe_ro
+
+pathogen_cpgs_track:
+  database: pathogen_cgps_track
+  host:     mcs15
+  port:     3347
+  user:     pathpipe_ro

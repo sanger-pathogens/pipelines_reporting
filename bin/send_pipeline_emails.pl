@@ -21,7 +21,7 @@ path-help@sanger.ac.uk
 =cut
 package Deploy;
 
-BEGIN { unshift(@INC, './modules') }
+BEGIN { unshift(@INC, '../lib') }
 use strict;
 use warnings;
 use Getopt::Long;

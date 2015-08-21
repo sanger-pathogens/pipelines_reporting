@@ -1,6 +1,6 @@
 qc:
   database: pathogen_qc_grind
-  host:     mcs15
+  host:     patp-db
   port:     3347
   user:     pathpipe_rw
   disable_emails: true
@@ -8,30 +8,30 @@ qc:
 
 eukaryotes:
   database: pathogen_euk_track
-  host:     mcs15
+  host:     patp-db
   port:     3347
   user:     pathpipe_ro
 
 prokaryotes:
   database: pathogen_prok_track
-  host:     mcs15
+  host:     patp-db
   port:     3347
   user:     pathpipe_ro
 
 helminths:
   database: pathogen_helminth_track
-  host:     mcs15
+  host:     patp-db
   port:     3347
   user:     pathpipe_ro
 
 viruses:
   database: pathogen_virus_track
-  host:     mcs15
+  host:     patp-db
   port:     3347
   user:     pathpipe_ro
 
 pathogen_cpgs_track:
   database: pathogen_cgps_track
-  host:     mcs15
+  host:     patp-db
   port:     3347
   user:     pathpipe_ro

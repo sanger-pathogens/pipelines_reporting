@@ -30,7 +30,7 @@ viruses:
   port:     3347
   user:     pathpipe_ro
 
-pathogen_cpgs_track:
+pathogen_cgps_track:
   database: pathogen_cgps_track
   host:     patp-db
   port:     3347

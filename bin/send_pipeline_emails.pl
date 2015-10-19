@@ -22,6 +22,7 @@ path-help@sanger.ac.uk
 package Deploy;
 
 BEGIN { unshift(@INC, '../lib') }
+BEGIN { unshift(@INC, './lib') }
 use strict;
 use warnings;
 use Getopt::Long;

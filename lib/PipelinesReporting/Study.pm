@@ -38,9 +38,13 @@ has 'database_name'          => ( is => 'rw', isa => 'Str', required   => 1 );
 has 'user_emails'  => ( is => 'rw', isa => 'Maybe[ArrayRef]', lazy_build => 1 );
 has 'qc_names'     => ( is => 'rw', isa => 'Maybe[HashRef]', lazy_build => 1 );
 has 'mapped_names' => ( is => 'rw', isa => 'Maybe[HashRef]', lazy_build => 1 );
+has 'assembled_names' => ( is => 'rw', isa => 'Maybe[HashRef]', lazy_build => 1 );
+has 'annotated_names' => ( is => 'rw', isa => 'Maybe[HashRef]', lazy_build => 1 );
 
-my @QC_PROCESSED_FLAG     = (3,11);
-my @MAPPED_PROCESSED_FLAG = (7,15,263,271);
+my @QC_PROCESSED_FLAG     = (3,7,11,15,263,271,527,783,1035,1039,1295,1551,1807,3083,3087,3343,3599,3855);
+my @MAPPED_PROCESSED_FLAG = (5,7,15,263,271,527,783,1039,1295,1551,3087,3343,3599,3855);
+my @ASSEMBLED_PROCESSED_FLAG = (1033,1035,1039,1295,1551,3081,3083,3087,3343,3599,3855);
+my @ANNOTATED_PROCESSED_FLAG = (3081,3083,3087,3343,3599,3855);
 
 ### public methods ###
 sub send_emails
@@ -48,7 +52,7 @@ sub send_emails
   my ($self) = @_;
   return if( !(defined $self->user_emails) || ( @{$self->user_emails} == 0 ) );
   
-  $self->_send_emails() if((scalar( keys %{$self->qc_names}) > 0) || (scalar( keys %{$self->mapped_names}) > 0));
+  $self->_send_emails() if((scalar( keys %{$self->qc_names}) > 0) || (scalar( keys %{$self->mapped_names}) > 0) || (scalar( keys %{$self->assembled_names}) > 0) || (scalar( keys %{$self->annotated_names}) > 0) );
 
 }
 
@@ -92,6 +96,40 @@ sub _build_mapped_names
     my $lane_email = PipelinesReporting::LaneEmails->new(_dbh => $self->_qc_dbh,name => $name);
     $names_needing_emails{$name} = $names_filtered_by_processed_flag{$name} unless( $lane_email->is_mapping_email_sent() );
     $lane_email->mapping_email_sent();
+  }
+
+  return \%names_needing_emails;
+}
+
+sub _build_assembled_names
+{
+  my ($self) = @_;
+  return if( !(defined $self->user_emails) || ( @{$self->user_emails} == 0 ) );
+  my %names_needing_emails ;
+
+  my %names_filtered_by_processed_flag = %{$self->_names_filtered_by_processed_flag(\@ASSEMBLED_PROCESSED_FLAG)};
+  for my $name(keys %names_filtered_by_processed_flag )
+  {
+    my $lane_email = PipelinesReporting::LaneEmails->new(_dbh => $self->_qc_dbh,name => $name);
+    $names_needing_emails{$name} = $names_filtered_by_processed_flag{$name} unless( $lane_email->is_assembly_email_sent() );
+    $lane_email->assembly_email_sent();
+  }
+
+  return \%names_needing_emails;
+}
+
+sub _build_annotated_names
+{
+  my ($self) = @_;
+  return if( !(defined $self->user_emails) || ( @{$self->user_emails} == 0 ) );
+  my %names_needing_emails ;
+
+  my %names_filtered_by_processed_flag = %{$self->_names_filtered_by_processed_flag(\@ANNOTATED_PROCESSED_FLAG)};
+  for my $name(keys %names_filtered_by_processed_flag )
+  {
+    my $lane_email = PipelinesReporting::LaneEmails->new(_dbh => $self->_qc_dbh,name => $name);
+    $names_needing_emails{$name} = $names_filtered_by_processed_flag{$name} unless( $lane_email->is_annotation_email_sent() );
+    $lane_email->annotation_email_sent();
   }
 
   return \%names_needing_emails;

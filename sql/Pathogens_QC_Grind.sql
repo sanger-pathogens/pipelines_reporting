@@ -10,7 +10,7 @@ CREATE TABLE `lane_emails` (
   `name` varchar(255)  NOT NULL,
   `qc_email_sent` tinyint(1) DEFAULT 0,
   `mapping_email_sent` tinyint(1) DEFAULT 0,
- `assembly_email_sent` tinyint(1) DEFAULT 0,
- `annotation_email_sent` tinyint(1) DEFAULT 0,
+  `assembly_email_sent` tinyint(1) DEFAULT 0,
+  `annotation_email_sent` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

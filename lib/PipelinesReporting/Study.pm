@@ -192,11 +192,12 @@ sub _send_emails
 
   my $qc_body = $self->_construct_email_body_for_lane_action('QC', $self->qc_names);
   my $mapped_body =  $self->_construct_email_body_for_lane_action('Mapping', $self->mapped_names);
-  
+  my $assembled_body =  $self->_construct_email_body_for_lane_action('Assembly', $self->assembled_names);
+  my $annotated_body =  $self->_construct_email_body_for_lane_action('Annotation', $self->annotated_names);
   
   
   my $to_email_addresses = join(',',@{$self->user_emails});
-  my $body = $qc_body."\n".$mapped_body."\n".'You are receiving this email because we think you are an analyst for this study. If you have received this email in error please contact path-help@sanger.ac.uk and we will remove you.';
+  my $body = $qc_body."\n".$mapped_body."\n".$assembled_body."\n".$annotated_body."\n".'You are receiving this email because we think you are an analyst for this study. If you have received this email in error please contact path-help@sanger.ac.uk and we will remove you.';
   
   sendmail(-from => $self->email_from_address,
 	           -to => $to_email_addresses,

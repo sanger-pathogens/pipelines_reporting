@@ -34,7 +34,9 @@ sub BUILD
   
   for my $pipeline_database_name(keys %{$self->pipeline_databases})
   {
-    my %pipeline_database = %{%{$self->pipeline_databases}->{$pipeline_database_name}};
+    my %pd = %{$self->pipeline_databases};
+    my $pd2 = $pd{$pipeline_database_name};
+    my %pipeline_database = %{$pd2};
     next if((defined $pipeline_database{disable_emails}) && $pipeline_database{disable_emails} == 1);
     
     my $database_password = $pipeline_database{password} || $self->database_password;

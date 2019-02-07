@@ -35,3 +35,9 @@ pathogen_cgps_track:
   host:     patp-db
   port:     3347
   user:     pathpipe_ro
+
+pathogen_pacbio_track:
+  database: pathogen_pacbio_track
+  host:     patp-db
+  port:     3347
+  user:     pathpipe_ro

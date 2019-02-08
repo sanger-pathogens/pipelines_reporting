@@ -213,7 +213,7 @@ sub _construct_email_body_for_lane_action
   my $body = '';
   if(scalar(keys %$names) > 0)
   {
-    my $lane_urls_str = join("\n",@{$self->_construct_lane_urls($names)});
+    my $lane_urls_str = join("\n",sort @{$self->_construct_lane_urls($names)});
     $body = <<BODY;
 The following lanes have finished $action_name in Study $study_name.
 

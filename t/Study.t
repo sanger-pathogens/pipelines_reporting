@@ -94,8 +94,8 @@ my $expected_email_body = 'The following lanes have finished QC in Study Study N
 
 abc_2	http://example.com?mode=0&lane_id=6&db=test
 abc_3	http://example.com?mode=0&lane_id=8&db=test
-abc_4 http://example.com?mode=0&lane_id=9&db=test
-abc_5 http://example.com?mode=0&lane_id=10&db=test
+abc_4	http://example.com?mode=0&lane_id=9&db=test
+abc_5	http://example.com?mode=0&lane_id=10&db=test
 
 ';
 

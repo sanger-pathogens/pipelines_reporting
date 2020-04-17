@@ -92,10 +92,10 @@ is $lane_email_abc_5->is_annotation_email_sent(), 1, 'annotated email lane 5 sen
 # check body of constructed email
 my $expected_email_body = 'The following lanes have finished QC in Study Study Name.
 
-abc_4	http://example.com?mode=0&lane_id=9&db=test
-abc_5	http://example.com?mode=0&lane_id=10&db=test
 abc_2	http://example.com?mode=0&lane_id=6&db=test
 abc_3	http://example.com?mode=0&lane_id=8&db=test
+abc_4 http://example.com?mode=0&lane_id=9&db=test
+abc_5 http://example.com?mode=0&lane_id=10&db=test
 
 ';
 

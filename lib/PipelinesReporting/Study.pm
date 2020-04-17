@@ -233,6 +233,7 @@ sub _construct_lane_urls
   {
     push(@lane_urls, $name."\t".$self->qc_grind_url.'?mode=0&lane_id='.$lane_id.'&db='.$self->database_name );
   }
+  @lane_urls = sort @lane_urls;
   
   return \@lane_urls;
 }

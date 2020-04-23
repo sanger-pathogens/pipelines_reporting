@@ -23,7 +23,8 @@ has 'settings' => ( is => 'rw', isa => 'HashRef', lazy_build => 1 );
 sub _build_settings 
 {
   my $self = shift;
-  my %config_settings = %{ Load( scalar read_file("config/".$self->environment."/".$self->filename.""))};
+  my $config_base_dir = $ENV{'CONFIG_BASE_DIR'} // '.' ; 
+  my %config_settings = %{ Load( scalar read_file($config_base_dir."/config/".$self->environment."/".$self->filename.""))};
 
   return \%config_settings;
 } 

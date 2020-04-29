@@ -1,0 +1,3 @@
+email_from_address: TARGET_EMAIL
+email_domain: sanger.ac.uk
+qc_grind_url: QC_GRIND_PL_URL

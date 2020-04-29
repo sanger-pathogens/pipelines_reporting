@@ -1,0 +1,37 @@
+qc:
+  database: pathogen_qc_grind
+  host:     DB_HOST
+  port:     DB_PORT
+  user:     DB_USER_NAME
+  disable_emails: true
+
+
+eukaryotes:
+  database: pathogen_euk_track
+  host:     DB_HOST
+  port:     DB_PORT
+  user:     DB_USER_NAME
+
+prokaryotes:
+  database: pathogen_prok_track
+  host:     DB_HOST
+  port:     DB_PORT
+  user:     DB_USER_NAME
+
+helminths:
+  database: pathogen_helminth_track
+  host:     DB_HOST
+  port:     DB_PORT
+  user:     DB_USER_NAME
+
+viruses:
+  database: pathogen_virus_track
+  host:     DB_HOST
+  port:     DB_PORT
+  user:     DB_USER_NAME
+
+pathogen_cgps_track:
+  database: pathogen_cgps_track
+  host:     DB_HOST
+  port:     DB_PORT
+  user:     DB_USER_NAME
